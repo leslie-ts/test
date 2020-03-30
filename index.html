@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Document</title>
+    <script src="./jquery-1.10.1.min.js"></script>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script src="./json.js"></script>
+</head>
+<style>
+ 
+    body{
+        font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+        background-image: linear-gradient(to right, rgba(29, 141, 216, 0), rgb(233, 204, 141));
+    }
+    input{
+        font-size:14px
+    }
+    button{
+    margin: 20px auto;
+    line-height: 50px;
+    width: 150px;
+    height: 50px;
+    display: block;
+    text-decoration: none;
+    font-weight: 100;
+    font-size: 20px;
+    border-radius: 5px;
+    color: #B4B4B5;
+    background: #333337;
+    text-align: center;
+    transition: all 900ms;
+}
+    button:hover{  
+        background:#434346;
+        color: #F0F0F0;
+    }
+    .title{
+        text-align:center;
+        font-size:28px
+    }  
+    #main{
+       width:500px;
+       height:400px;
+       }
+   
+</style>
+<body>
+    <div id="box" style="display: block;">
+        <p class="title">五行人格测试题</p>
+        <p style="font-size: 18px;color:#bf242a">格外注意：</p>
+        <p>题目本身没有好坏对错之分，不要思考哪个是最正确的，或者去研究在对应场景下应该最合适选哪个，而是听从自己内心的声音，选择那个你最自然的反应。一共30道题，耐心一点，期待你发现真实的自己。</p>
+        <p style="font-size: 18px;">请开始您的性格测试吧！</p>
+        <div id="min"></div>
+        <button onclick="myTest()">提交</button>
+    </div>
+    <div id="img" style="display:none;">
+         <div id="main"></div>
+         <p>您的测试结果如上，感谢您的参与！扫描下方二维码，了解更多</p>
+         <div style="width:200px;height:auto">
+             <img style="width:100%;text-align:center;" src="./WechatIMG366.jpeg"/>
+         </div> 
+    </div>   
+</body>
+<script type="text/javascript">
+    var count = [];
+    for(var i=0;i<data.length;i++){
+        $("#min").append(`<p style="font-size:18px;color:#bf242a">${data[i].name}</p>`);
+        for(var j=0;j<data[i].option.length;j++){
+            $("#min").append(`<p><input type="radio" name="${data[i].id}" value='${data[i].option[j].nameId}'>${data[i].option[j].title}</p>`);
+        };
+    };
+    $("input").click(function(){
+        count.push({"text":this.name,"value":this.value});
+        count.sort((a,b)=>a.text-b.text);
+            for(var i=0; i<count.length; i++){
+                for(var j=i+1; j<count.length; j++){
+                    if(count[i].text==count[j].text){         //第一个等同于第二个，splice方法删除第二个
+                        count.splice(j-1,1);
+                        j--;
+                    }
+                }
+            }
+    })
+    function myTest(){
+        var aValue=0, bValue=0, cValue=0, dValue=0, eValue=0;
+        if(count.length<0){
+            alert(`亲，您还有${30-count.length}道没做完呦~`)
+        }else{
+            document.getElementById("box").style.display = "none"
+            document.getElementById("img").style.display = "block"
+            for(var i =0; i<count.length;i++){
+                if(count[i].value === "a"){
+                    aValue++;
+                }else if(count[i].value === "b"){
+                    bValue++;
+                }else if(count[i].value === "c"){
+                    cValue++;
+                }else if(count[i].value === "d"){
+                    dValue++;
+                }else{
+                    eValue++;
+                }               
+            }
+           const aValues = Math.round((aValue/30) *100)+'%';
+           const bValues = Math.round((bValue/30) *100)+'%';
+           const cValues = Math.round((cValue/30) *100)+'%';
+           const dValues = Math.round((dValue/30) *100)+'%';
+           const eValues = Math.round((eValue/30) *100)+'%';
+            var myChart = echarts.init(document.getElementById('main'));
+            var option = {
+                title: {
+                    text: '五行人格分析图',
+                    left: 'left'
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        radius: '50%',
+                        center: ['35%', '50%'],
+                        selectedMode: 'single',
+                        data: [
+                            {value: aValue, name: `火型（${aValues}）`, itemStyle:{color:"#bf242a"}},
+                            {value: bValue, name: `土型（${bValues}）`, itemStyle:{color:"#c89b40"}},
+                            {value: cValue, name: `金型（${cValues}）`, itemStyle:{color:"#FFFF00"}},
+                            {value: dValue, name: `木型（${dValues}）`, itemStyle:{color:"#0c8918"}},
+                            {value: eValue, name: `水型（${eValues}）`, itemStyle:{color:"#44cef6"}}
+                        ],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ],
+                
+            };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+                window.onresize = myChart.resize
+                }
+        
+    }
+</script>
+</html>
